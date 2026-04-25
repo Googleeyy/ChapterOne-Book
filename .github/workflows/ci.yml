@@ -154,8 +154,14 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Debug working directory
+        run: |
+          echo "WORKING_DIRECTORY: ${{ env.WORKING_DIRECTORY }}"
+          echo "Current directory: $(pwd)"
+          ls -la
+
       - name: Run tests
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: ./services
         run: mvn test
 
   # ─────────────────────────────────────────────
