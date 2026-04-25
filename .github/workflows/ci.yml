@@ -35,7 +35,7 @@ on:
 env:
   IMAGE_NAME: ${{ github.event.inputs.image_name || vars.IMAGE_NAME || github.event.repository.name }}
   JAVA_VERSION: ${{ github.event.inputs.java_version || vars.JAVA_VERSION || '17' }}
-  WORKING_DIRECTORY: ${{ github.event.inputs.working_directory || vars.WORKING_DIRECTORY || 'services' }}
+  WORKING_DIRECTORY: ${{ github.event.inputs.working_directory || vars.WORKING_DIRECTORY || '.' }}
 
 jobs:
 
@@ -154,14 +154,8 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Debug working directory
-        run: |
-          echo "WORKING_DIRECTORY: ${{ env.WORKING_DIRECTORY }}"
-          echo "Current directory: $(pwd)"
-          ls -la
-
       - name: Run tests
-        working-directory: ./services
+        working-directory: ${{ env.WORKING_DIRECTORY }}
         run: mvn test
 
   # ─────────────────────────────────────────────
@@ -187,7 +181,7 @@ jobs:
     uses: Googleeyy/ChapterOne-Reusable-Templates/.github/workflows/_snyk.yml@main
     with:
       runtime: java
-      working_directory: ${{ vars.WORKING_DIRECTORY || 'services' }}
+      working_directory: ${{ vars.WORKING_DIRECTORY || '.' }}
       java_version: ${{ vars.JAVA_VERSION || '17' }}
       severity_threshold: ${{ vars.SNYK_SEVERITY || 'high' }}
     secrets: inherit
@@ -204,9 +198,9 @@ jobs:
       image_name: ${{ needs.prepare.outputs.image_name }}
       tag: ${{ needs.prepare.outputs.tag }}
       is_production: ${{ needs.prepare.outputs.is_production }}
-      working_directory: ${{ vars.WORKING_DIRECTORY || 'services' }}
-      docker_context: 'services'
-      dockerfile_path: 'services/Dockerfile'
+      working_directory: ${{ vars.WORKING_DIRECTORY || '.' }}
+      docker_context: '.'
+      dockerfile_path: 'Dockerfile'
       java_version: ${{ vars.JAVA_VERSION || '17' }}
       trivy_severity: ${{ vars.TRIVY_SEVERITY || 'CRITICAL,HIGH' }}
       trivy_ignore_unfixed: ${{ vars.TRIVY_IGNORE_UNFIXED || 'false' }}
