@@ -9,12 +9,8 @@ permissions:
 on:
   push:
     branches: [dev, production]
-    paths:
-      - 'services/**'
   pull_request:
     branches: [dev, production]
-    paths:
-      - 'services/**'
   workflow_dispatch:
     inputs:
       image_name:
